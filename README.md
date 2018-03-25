@@ -1,6 +1,9 @@
 OpenVPN Update resolvconf
 -------------------------
 
+### minor changes to run on busybox
+reduced bashism 
+
 ### Description
 
 This is a script to update your /etc/resolv.conf with DNS settings that
