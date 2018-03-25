@@ -8,28 +8,51 @@
 # Used snippets of resolvconf script by Thomas Hood <jdthood@yahoo.co.uk>
 # and Chris Hanson
 # Licensed under the GNU GPL.  See /usr/share/common-licenses/GPL.
+# 13/10/2017 cfdisk: added support for busybox shells (POSIX)
+# 12/10/2017 cfdisk: added shell testmode
 # 07/2013 colin@daedrum.net Fixed intet name
 # 05/2006 chlauber@bnc.ch
 #
 # Example envs set from openvpn:
-# foreign_option_1='dhcp-option DNS 193.43.27.132'
-# foreign_option_2='dhcp-option DNS 193.43.27.133'
-# foreign_option_3='dhcp-option DOMAIN be.bnc.ch'
-# foreign_option_4='dhcp-option DOMAIN-SEARCH bnc.local'
 
 ## The 'type' builtins will look for file in $PATH variable, so we set the
 ## PATH below. You might need to directly set the path to 'resolvconf'
 ## manually if it still doesn't work, i.e.
 ## RESOLVCONF=/usr/sbin/resolvconf
+
+TESTMODE=0; # testmode for bash: just parse, dont run resolvconf
+if [ $TESTMODE -ne 0 ]; then
+    echo "Testmode"
+    foreign_option_1='dhcp-option DNS 193.43.27.132'
+    foreign_option_2='dhcp-option DNS 193.43.27.133'
+    foreign_option_3='dhcp-option DOMAIN be.bnc.ch'
+    foreign_option_4='dhcp-option DOMAIN-SEARCH bnc.local'
+    script_type=up
+    dev=tun0
+fi
+
 export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin
 RESOLVCONF=$(type -p resolvconf)
 
-case $script_type in
+tmpvars=`set |grep "foreign_option_"`
+tmpvars=`echo $tmpvars | sed s/foreign_option_..//g |sed s/"'"//g`
 
+count=0
+for line in ${tmpvars}; do
+    if [ `expr $count % 3` = 0 -a $count != 0 ]; then
+        preoption=`/bin/echo -en "$preoption\n$line "`
+    else
+        preoption="$preoption$line "
+    fi
+    count=$(expr $count + 1)
+done
+
+case $script_type in
 up)
-  for optionname in ${!foreign_option_*} ; do
-    option="${!optionname}"
-    echo $option
+    IFS=$'\n'
+  for optionname in ${preoption} ; do
+    option=${optionname}
+    #echo "->>$option"
     part1=$(echo "$option" | cut -d " " -f 1)
     if [ "$part1" == "dhcp-option" ] ; then
       part2=$(echo "$option" | cut -d " " -f 2)
@@ -42,6 +65,7 @@ up)
       fi
     fi
   done
+  unset IFS
   R=""
   if [ "$IF_DNS_SEARCH" ]; then
     R="search "
@@ -57,14 +81,19 @@ up)
 "
   done
   #echo -n "$R" | $RESOLVCONF -x -p -a "${dev}"
-  echo -n "$R" | $RESOLVCONF -x -a "${dev}.inet"
-  ;;
+    if [ $TESTMODE -eq 0 ]; then
+        echo -n "$R" | $RESOLVCONF -a "${dev}.inet"
+    fi
+    echo -n "$R"  ;;
+
 down)
-  $RESOLVCONF -d "${dev}.inet"
+    if [ $TESTMODE -eq 0 ]; then
+        $RESOLVCONF -d "${dev}.inet"
+    fi
   ;;
 esac
 
-# Workaround / jm@epiclabs.io 
+# Workaround / jm@epiclabs.io
 # force exit with no errors. Due to an apparent conflict with the Network Manager
 # $RESOLVCONF sometimes exits with error code 6 even though it has performed the
 # action correctly and OpenVPN shuts down.
