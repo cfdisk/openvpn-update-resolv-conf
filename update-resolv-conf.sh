@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 #
 # Parses DHCP options from openvpn to update resolv.conf
 # To use set as 'up' and 'down' script in your openvpn *.conf:
