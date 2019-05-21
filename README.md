@@ -2,7 +2,8 @@ OpenVPN Update resolvconf
 -------------------------
 
 ### minor changes to run on busybox
-reduced bashism 
+- reduced bashism 
+- Option to disable ipv6 support while tunnel is active
 
 ### Description
 
