@@ -109,10 +109,6 @@ down)
   ;;
 esac
 
-echo "restore ipv6 settings..."
-sysctl -w net.ipv6.conf.all.disable_ipv6=$ALL_DISABLE_IPV6
-sysctl -w net.ipv6.conf.default.disable_ipv6=$DEFAULT_DISABLE_IPV6
-
 # Workaround / jm@epiclabs.io
 # force exit with no errors. Due to an apparent conflict with the Network Manager
 # $RESOLVCONF sometimes exits with error code 6 even though it has performed the
