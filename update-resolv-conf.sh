@@ -20,11 +20,11 @@
 ## manually if it still doesn't work, i.e.
 ## RESOLVCONF=/usr/sbin/resolvconf
 
-# disable ipv6= 1=disable 0=enable
+# disable ipv6 => 1=disable 0=enable
 DISABLE_IPV6=1;
 
-# testmode for bash: just parse, dont run resolvconf
-TESTMODE=1;
+# testmode for bash: set to 1 to just parse, dont run resolvconf
+TESTMODE=0;
 if [ $TESTMODE -ne 0 ]; then
     echo "Testmode"
     foreign_option_1='dhcp-option DNS 193.43.27.132'
