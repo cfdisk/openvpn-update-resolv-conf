@@ -20,7 +20,11 @@
 ## manually if it still doesn't work, i.e.
 ## RESOLVCONF=/usr/sbin/resolvconf
 
-TESTMODE=0; # testmode for bash: just parse, dont run resolvconf
+# disable ipv6= 1=disable 0=enable
+DISABLE_IPV6=1;
+
+# testmode for bash: just parse, dont run resolvconf
+TESTMODE=1;
 if [ $TESTMODE -ne 0 ]; then
     echo "Testmode"
     foreign_option_1='dhcp-option DNS 193.43.27.132'
@@ -30,6 +34,11 @@ if [ $TESTMODE -ne 0 ]; then
     script_type=up
     dev=tun0
 fi
+#####################################################################################
+
+# store ipv6 setting
+DEFAULT_DISABLE_IPV6=$(sysctl -n net.ipv6.conf.default.disable_ipv6)
+ALL_DISABLE_IPV6=$(sysctl -n net.ipv6.conf.all.disable_ipv6)
 
 export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin
 RESOLVCONF=$(type -p resolvconf)
@@ -49,7 +58,14 @@ done
 
 case $script_type in
 up)
+    if [ $DISABLE_IPV6 -eq 1 ]; then
+	echo "disable ipv6..."
+	sysctl -w net.ipv6.conf.all.disable_ipv6=1
+	sysctl -w net.ipv6.conf.default.disable_ipv6=1
+    fi
+
     IFS=$'\n'
+
   for optionname in ${preoption} ; do
     option=${optionname}
     #echo "->>$option"
@@ -92,6 +108,10 @@ down)
     fi
   ;;
 esac
+
+echo "restore ipv6 settings..."
+sysctl -w net.ipv6.conf.all.disable_ipv6=$ALL_DISABLE_IPV6
+sysctl -w net.ipv6.conf.default.disable_ipv6=$DEFAULT_DISABLE_IPV6
 
 # Workaround / jm@epiclabs.io
 # force exit with no errors. Due to an apparent conflict with the Network Manager
