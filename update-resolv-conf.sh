@@ -36,10 +36,6 @@ if [ $TESTMODE -ne 0 ]; then
 fi
 #####################################################################################
 
-# store ipv6 setting
-DEFAULT_DISABLE_IPV6=$(sysctl -n net.ipv6.conf.default.disable_ipv6)
-ALL_DISABLE_IPV6=$(sysctl -n net.ipv6.conf.all.disable_ipv6)
-
 export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin
 RESOLVCONF=$(type -p resolvconf)
 
@@ -58,6 +54,12 @@ done
 
 case $script_type in
 up)
+    # store ipv6 setting
+    DEFAULT_DISABLE_IPV6=$(sysctl -n net.ipv6.conf.default.disable_ipv6)
+    ALL_DISABLE_IPV6=$(sysctl -n net.ipv6.conf.all.disable_ipv6)
+    echo -n "$ALL_DISABLE_IPV6 "> /tmp/.temp-resolvconf
+    echo $DEFAULT_DISABLE_IPV6 >> /tmp/.temp-resolvconf
+
     if [ $DISABLE_IPV6 -eq 1 ]; then
 	echo "disable ipv6..."
 	sysctl -w net.ipv6.conf.all.disable_ipv6=1
@@ -103,6 +105,12 @@ up)
     echo -n "$R"  ;;
 
 down)
+    echo restore IPv6 settings...
+    read var1 var2  < /tmp/.temp-resolvconf
+    sysctl -w net.ipv6.conf.all.disable_ipv6=$var1
+    sysctl -w net.ipv6.conf.default.disable_ipv6=$var2
+    rm -f /tmp/.temp-resolvconf
+
     if [ $TESTMODE -eq 0 ]; then
         $RESOLVCONF -d "${dev}.inet"
     fi
