@@ -6,7 +6,7 @@ https://github.com/alfredopalhares/openvpn-update-resolv-conf
 
 ### Änderungen
 - bashism rediziert. Skript auch unter busybox lauffähig
-- Option im IPv6 zu deaktivieren 
+- Option um IPv6 zu deaktivieren (Default: ON)
 
 ### Funktionsweise:
 - Nach erfolgreichem Tunnel-Aufbau werden die DNS Server eures Anbieters über einen DHCP artigen Mechanismus ausgelesen und dann in der Box als beforzugte DNS Server konfiguriert. Oftmals (nicht immer) handelt es sich dabei um eine oder zwei Adresse(n) die mit 10.X.X.X beginnen.
