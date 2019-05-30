@@ -1,7 +1,7 @@
 OpenVPN Update resolvconf für busybox (Enigma2 und Co.)
 -------------------------------------------------------
 
-### Original gibt es hier: 
+### Original Projekt ist hier:
 https://github.com/alfredopalhares/openvpn-update-resolv-conf
 
 ### Änderungen
@@ -39,4 +39,6 @@ cat /etc/resolv.conf
 ```
 
 Hier sollte jetzt mindestens ein Eintrag vorhanden sein, der in etwas so aussieht (IP ist oft 10.x.x.x, ):
+```
 nameserver 10.X.X.X
+```
