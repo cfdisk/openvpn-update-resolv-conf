@@ -1,65 +1,34 @@
-OpenVPN Update resolvconf
--------------------------
+OpenVPN Update resolvconf für busybox (Enigma2 und Co.)
+-------------------------------------------------------
 
-### minor changes to run on busybox
-- reduced bashism 
-- Option to disable ipv6 support while tunnel is active
+### Original gibt es hier: 
+https://github.com/alfredopalhares/openvpn-update-resolv-conf
 
-### Description
+### Änderungen
+- bashism rediziert. Skript auch unter busybox lauffähig
+- Option im IPv6 zu deaktivieren 
 
-This is a script to update your /etc/resolv.conf with DNS settings that
-come from the received push dhcp-options. Since network management is out
-of OpenVPN client scope, this script adds and removes the provided from
-those settings.
+### Funktionsweise:
+1) Nach erfolgreichem Tunnel-Aufbau werden die DNS Server eures Anbieters über einen DHCP artigen Mechanismus ausgelesen und dann in der Box als beforzugte DNS Server konfiguriert. Oftmals (nicht immer) handelt es sich dabei um eine oder zwei Adresse(n) die mit 10.X.X.X beginnen.
+Euer ursprünglicher DNS wird ans Ende der Liste gesetzt.
+2) Sobald openVPN beendet wird, wird der Ursprungszustand wiederhergestellt.
 
-This script was found on the [OpenVPN page of the Archlinux Wiki](https://wiki.archlinux.org/index.php/Openvpn#DNS)
+### Anleitung:
+1) mit Telnet/SSH auf der Box anmelden
 
-However if you have systemd 229 or newer the better option is to use
-script from https://github.com/jonathanio/update-systemd-resolved
-which uses DBus calls instead of creating temporary *.network files.
+2) Evtl. fehlende Pakete installieren:
+```opkg install resolvconf ```
 
-### Usage
+3) Script installieren:
+```cd /etc/openvpn; rm -f ./update-resolv-conf-BJ ; wget https://raw.githubusercontent.com/cfdisk/openvpn-update-resolv-conf/master/update-resolv-conf.sh -O ./update-resolv-conf-BJ; chmod +x update-resolv-conf-BJ```
 
-Install [openresolv](http://roy.marples.name/projects/openresolv)
+4) OpenVPN Konfiguration anpassen, folgende Zeilen hinzufügen, bzw. abändern, sofern schon vorhanden:
+```script-security 2
+up /etc/openvpn/update-resolv-conf-BJ
+down /etc/openvpn/update-resolv-conf-BJ```
 
-Place the script in ``/etc/openvpn/update-resolv-conf.sh`` or anywhere the
-OpenVPN client can acess.
+5) VPN Starten und dann DNS checken mit
+```cat /etc/resolv.conf```
 
-Add the following lines to your client configuration:
-
-```
-# This updates the resolvconf with dns settings
-setenv PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-script-security 2
-up /etc/openvpn/update-resolv-conf.sh
-down /etc/openvpn/update-resolv-conf.sh
-down-pre
-```
-
-Just start your openvpn client with the command you used to do.
-
-Alternatively, if you don't want to edit your client configuration, you can add the following options to your openvpn command:
-
-```
---setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/update-resolv-conf.sh --down /etc/openvpn/update-resolv-conf.sh --down-pre
-```
-
-### Support
-
-For bugs and another questions open a ticket in the [Isssues Page](https://github.com/masterkorp/openvpn-update-resolv-conf/issues).
-
-You can find me on irc.freenode.org and in last case mail me through the email that is on my [Github Profile](https://github.com/masterkorp)
-
-### License
-
-Licenced under GNU GPL.
-
-### Credits
-
-2016 - WGH Added modified script to support systemd-networkd
-
-2014 - Alfredo Palhares <masterkorp@masterkorp.net>
-
-2013 - colin@daedrum.net Fixed intet name
-
-2006 - chlauber@bnc.ch
+Hier sollte jetzt mindestens ein Eintrag vorhanden sein, der in etwas so aussieht (IP ist oft 10.x.x.x, ):
+nameserver 10.X.X.X
