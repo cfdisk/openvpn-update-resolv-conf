@@ -39,7 +39,7 @@ down /etc/openvpn/update-resolv-conf-BJ
 cat /etc/resolv.conf
 ```
 
-Hier sollte jetzt mindestens ein Eintrag vorhanden sein, der in etwas so aussieht (IP ist oft 10.x.x.x, ):
+Hier sollte jetzt mindestens ein Eintrag vorhanden sein, der in etwas so aussieht:
 ```
 nameserver 10.X.X.X
 ```
