@@ -5,7 +5,7 @@ OpenVPN Update resolvconf für busybox (Enigma2 und Co.)
 https://github.com/alfredopalhares/openvpn-update-resolv-conf
 
 ### Änderungen
-- bashism rediziert. Skript auch unter busybox lauffähig
+- bashism entfernt. Skript auch unter busybox lauffähig
 - Option um IPv6 zu deaktivieren (Default: ON)
 
 ### Funktionsweise:
@@ -43,3 +43,4 @@ Hier sollte jetzt mindestens ein Eintrag vorhanden sein, der in etwas so aussieh
 ```
 nameserver 10.X.X.X
 ```
+
