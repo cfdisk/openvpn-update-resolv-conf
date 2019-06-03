@@ -9,8 +9,8 @@ https://github.com/alfredopalhares/openvpn-update-resolv-conf
 - Option um IPv6 zu deaktivieren (Default: ON)
 
 ### Funktionsweise:
-- Nach erfolgreichem Tunnel-Aufbau werden die DNS Server eures Anbieters über einen DHCP artigen Mechanismus ausgelesen und dann in der Box als beforzugte DNS Server konfiguriert. Oftmals (nicht immer) handelt es sich dabei um eine oder zwei Adresse(n) die mit 10.X.X.X beginnen.
-Euer ursprünglicher DNS wird ans Ende der Liste gesetzt.
+- Nach erfolgreichem Tunnel-Aufbau werden die DNS Server des VPN Anbieters ausgelesen und dann auf der Box als bevorzugte DNS Server konfiguriert. Oftmals (nicht immer) handelt es sich dabei um eine oder zwei Adresse(n) die mit 10.X.X.X beginnen.
+Der ursprünglicher DNS Server wird ans Ende der Liste gesetzt.
 - Um Routing-Leaks zu vermeiden, wird IPv6 während aktivem Tunnel deaktiviert
 - Sobald openVPN beendet wird, wird der Ursprungszustand wiederhergestellt (DNS und IPv6)
 
